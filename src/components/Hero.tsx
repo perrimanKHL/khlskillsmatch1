@@ -1,106 +1,78 @@
-import React from 'react';
-import { ArrowRight, Users, BookOpen, Star } from 'lucide-react';
+import React, { useState } from 'react';
+import { Search, Users, BookOpen, Heart } from 'lucide-react';
+import { useAuth } from '../contexts/AuthContext';
+import AuthModal from './auth/AuthModal';
 
-const Hero = () => {
+export default function Hero() {
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const { user } = useAuth();
+
+  const handleGetStarted = () => {
+    if (!user) {
+      setIsAuthModalOpen(true);
+    }
+  };
+
   return (
-    <div className="relative bg-gradient-to-br from-blue-50 via-white to-purple-50 overflow-hidden">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-24">
-        <div className="grid lg:grid-cols-2 gap-12 items-center">
-          {/* Left Content */}
-          <div className="text-center lg:text-left">
-            <h1 className="text-4xl lg:text-6xl font-bold text-gray-900 leading-tight">
-              Kurdish House London
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600">
-                {' '}Skills Share
-              </span>
+    <>
+      <section className="bg-gradient-to-br from-emerald-50 to-teal-50 py-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center">
+            <h1 className="text-4xl md:text-6xl font-bold text-gray-900 mb-6">
+              Share Skills, Build
+              <span className="text-emerald-600"> Community</span>
             </h1>
-            <p className="mt-6 text-xl text-gray-600 leading-relaxed">
-              Connect with Kurdish community members across London to learn and share practical life skills. 
-              From traditional cooking to sustainable science and AI - strengthen our community through knowledge sharing.
+            <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
+              Connect with the Kurdish community in London to learn and teach life skills. 
+              From traditional cooking to modern technology - all completely free.
             </p>
             
-            <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-              <button className="flex items-center justify-center px-8 py-4 text-lg font-semibold text-white bg-blue-600 rounded-xl hover:bg-blue-700 transition-all duration-200 shadow-lg hover:shadow-xl">
-                Find Skills to Learn
-                <ArrowRight className="ml-2 h-5 w-5" />
+            <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
+              <button
+                onClick={handleGetStarted}
+                className="bg-emerald-600 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-emerald-700 transition-colors"
+              >
+                {user ? 'Browse Skills' : 'Join Our Community'}
               </button>
-              <button className="flex items-center justify-center px-8 py-4 text-lg font-semibold text-blue-600 bg-white border-2 border-blue-600 rounded-xl hover:bg-blue-50 transition-all duration-200">
-                Share Your Skills
+              <button className="border-2 border-emerald-600 text-emerald-600 px-8 py-4 rounded-lg text-lg font-semibold hover:bg-emerald-50 transition-colors">
+                How It Works
               </button>
             </div>
 
-            {/* Free Badge */}
-            <div className="mt-6 inline-flex items-center px-4 py-2 bg-green-100 text-green-800 rounded-full font-semibold">
-              <span className="text-green-600 mr-2">✨</span>
-              Completely Free for Kurdish Community
-            </div>
-
-            {/* Stats */}
-            <div className="mt-12 grid grid-cols-3 gap-8">
-              <div className="text-center lg:text-left">
-                <div className="flex items-center justify-center lg:justify-start">
-                  <Users className="h-6 w-6 text-blue-600 mr-2" />
-                  <span className="text-2xl font-bold text-gray-900">1,200+</span>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+              <div className="text-center">
+                <div className="bg-white rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4 shadow-lg">
+                  <Users className="w-8 h-8 text-emerald-600" />
                 </div>
-                <p className="text-gray-600 mt-1">Community Members</p>
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">500+ Members</h3>
+                <p className="text-gray-600">Active Kurdish community members sharing knowledge</p>
               </div>
-              <div className="text-center lg:text-left">
-                <div className="flex items-center justify-center lg:justify-start">
-                  <BookOpen className="h-6 w-6 text-purple-600 mr-2" />
-                  <span className="text-2xl font-bold text-gray-900">950+</span>
+              
+              <div className="text-center">
+                <div className="bg-white rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4 shadow-lg">
+                  <BookOpen className="w-8 h-8 text-emerald-600" />
                 </div>
-                <p className="text-gray-600 mt-1">Skills Shared</p>
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">200+ Skills</h3>
+                <p className="text-gray-600">From traditional crafts to modern technology</p>
               </div>
-              <div className="text-center lg:text-left">
-                <div className="flex items-center justify-center lg:justify-start">
-                  <Star className="h-6 w-6 text-yellow-500 mr-2" />
-                  <span className="text-2xl font-bold text-gray-900">4.9</span>
+              
+              <div className="text-center">
+                <div className="bg-white rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4 shadow-lg">
+                  <Heart className="w-8 h-8 text-emerald-600" />
                 </div>
-                <p className="text-gray-600 mt-1">Community Rating</p>
-              </div>
-            </div>
-          </div>
-
-          {/* Right Content - Image */}
-          <div className="relative">
-            <div className="relative rounded-2xl overflow-hidden shadow-2xl">
-              <img
-                src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=600&h=400&fit=crop"
-                alt="Kurdish community members learning together"
-                className="w-full h-96 object-cover"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
-            </div>
-            
-            {/* Floating Cards */}
-            <div className="absolute -top-4 -left-4 bg-white rounded-xl shadow-lg p-4 border border-gray-100">
-              <div className="flex items-center">
-                <div className="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center">
-                  <span className="text-orange-600 font-semibold">🍳</span>
-                </div>
-                <div className="ml-3">
-                  <p className="font-semibold text-gray-900">Kurdish Cooking</p>
-                  <p className="text-sm text-gray-500">Free • North London</p>
-                </div>
-              </div>
-            </div>
-            
-            <div className="absolute -bottom-4 -right-4 bg-white rounded-xl shadow-lg p-4 border border-gray-100">
-              <div className="flex items-center">
-                <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                  <span className="text-blue-600 font-semibold">🤖</span>
-                </div>
-                <div className="ml-3">
-                  <p className="font-semibold text-gray-900">AI & Tech Skills</p>
-                  <p className="text-sm text-gray-500">4.9 ⭐ (24 reviews)</p>
-                </div>
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">100% Free</h3>
+                <p className="text-gray-600">Community-driven learning with no hidden costs</p>
               </div>
             </div>
           </div>
         </div>
-      </div>
-    </div>
-  );
-};
+      </section>
 
-export default Hero;
+      <AuthModal
+        isOpen={isAuthModalOpen}
+        onClose={() => setIsAuthModalOpen(false)}
+        initialMode="signup"
+      />
+    </>
+  );
+}

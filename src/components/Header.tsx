@@ -1,95 +1,199 @@
 import React, { useState } from 'react';
-import { Search, Menu, X, User, Plus } from 'lucide-react';
+import { Search, Menu, X, User, LogOut, Plus } from 'lucide-react';
+import { useAuth } from '../contexts/AuthContext';
+import AuthModal from './auth/AuthModal';
 
-const Header = () => {
+export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [authMode, setAuthMode] = useState<'signin' | 'signup'>('signin');
+  const { user, profile, signOut } = useAuth();
+
+  const handleAuthClick = (mode: 'signin' | 'signup') => {
+    setAuthMode(mode);
+    setIsAuthModalOpen(true);
+  };
+
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+      setIsMenuOpen(false);
+    } catch (error) {
+      console.error('Error signing out:', error);
+    }
+  };
 
   return (
-    <header className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
-          {/* Logo */}
-          <div className="flex items-center">
-            <div className="flex-shrink-0 flex items-center">
-              <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-sm">KH</span>
+    <>
+      <header className="bg-white shadow-sm border-b border-gray-100">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16">
+            <div className="flex items-center">
+              <div className="flex-shrink-0">
+                <h1 className="text-xl font-bold text-emerald-600">
+                  Kurdish House London Skills Share
+                </h1>
               </div>
-              <span className="ml-2 text-xl font-bold text-gray-900">Kurdish House London Skills Share</span>
             </div>
-            <span className="ml-3 px-2 py-1 text-xs font-medium text-blue-600 bg-blue-50 rounded-full">
-              London
-            </span>
-          </div>
 
-          {/* Search Bar - Desktop */}
-          <div className="hidden md:flex flex-1 max-w-lg mx-8">
-            <div className="relative w-full">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <Search className="h-5 w-5 text-gray-400" />
+            <div className="hidden md:block flex-1 max-w-lg mx-8">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                <input
+                  type="text"
+                  placeholder="Search skills, people, or categories..."
+                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                />
               </div>
-              <input
-                type="text"
-                placeholder="Search skills in Kurdish community..."
-                className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-              />
+            </div>
+
+            <div className="hidden md:flex items-center space-x-4">
+              {user ? (
+                <>
+                  <button className="flex items-center space-x-2 bg-emerald-600 text-white px-4 py-2 rounded-lg hover:bg-emerald-700 transition-colors">
+                    <Plus className="w-4 h-4" />
+                    <span>Add Skill</span>
+                  </button>
+                  <div className="relative">
+                    <button
+                      onClick={() => setIsMenuOpen(!isMenuOpen)}
+                      className="flex items-center space-x-2 text-gray-700 hover:text-gray-900"
+                    >
+                      <div className="w-8 h-8 bg-emerald-100 rounded-full flex items-center justify-center">
+                        {profile?.avatar_url ? (
+                          <img
+                            src={profile.avatar_url}
+                            alt={profile.full_name}
+                            className="w-8 h-8 rounded-full object-cover"
+                          />
+                        ) : (
+                          <User className="w-4 h-4 text-emerald-600" />
+                        )}
+                      </div>
+                      <span className="font-medium">{profile?.full_name || 'User'}</span>
+                    </button>
+                    
+                    {isMenuOpen && (
+                      <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-50">
+                        <a href="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
+                          Profile
+                        </a>
+                        <a href="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
+                          My Skills
+                        </a>
+                        <a href="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
+                          Messages
+                        </a>
+                        <hr className="my-1" />
+                        <button
+                          onClick={handleSignOut}
+                          className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-50 flex items-center space-x-2"
+                        >
+                          <LogOut className="w-4 h-4" />
+                          <span>Sign Out</span>
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                </>
+              ) : (
+                <>
+                  <button
+                    onClick={() => handleAuthClick('signin')}
+                    className="text-gray-700 hover:text-gray-900 font-medium"
+                  >
+                    Sign In
+                  </button>
+                  <button
+                    onClick={() => handleAuthClick('signup')}
+                    className="bg-emerald-600 text-white px-4 py-2 rounded-lg hover:bg-emerald-700 transition-colors"
+                  >
+                    Join Community
+                  </button>
+                </>
+              )}
+            </div>
+
+            <div className="md:hidden">
+              <button
+                onClick={() => setIsMenuOpen(!isMenuOpen)}
+                className="text-gray-700 hover:text-gray-900"
+              >
+                {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+              </button>
             </div>
           </div>
 
-          {/* Navigation - Desktop */}
-          <div className="hidden md:flex items-center space-x-4">
-            <button className="flex items-center px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors">
-              <Plus className="h-4 w-4 mr-2" />
-              Share Skill
-            </button>
-            <button className="flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">
-              <User className="h-4 w-4 mr-2" />
-              Profile
-            </button>
-          </div>
-
-          {/* Mobile menu button */}
-          <div className="md:hidden">
-            <button
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500"
-            >
-              {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-            </button>
-          </div>
-        </div>
-
-        {/* Mobile Search */}
-        <div className="md:hidden pb-4">
-          <div className="relative">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <Search className="h-5 w-5 text-gray-400" />
+          {isMenuOpen && (
+            <div className="md:hidden border-t border-gray-200 py-4">
+              <div className="space-y-4">
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                  <input
+                    type="text"
+                    placeholder="Search skills..."
+                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                  />
+                </div>
+                
+                {user ? (
+                  <div className="space-y-2">
+                    <div className="flex items-center space-x-3 py-2">
+                      <div className="w-8 h-8 bg-emerald-100 rounded-full flex items-center justify-center">
+                        {profile?.avatar_url ? (
+                          <img
+                            src={profile.avatar_url}
+                            alt={profile.full_name}
+                            className="w-8 h-8 rounded-full object-cover"
+                          />
+                        ) : (
+                          <User className="w-4 h-4 text-emerald-600" />
+                        )}
+                      </div>
+                      <span className="font-medium text-gray-900">{profile?.full_name || 'User'}</span>
+                    </div>
+                    <button className="w-full flex items-center space-x-2 bg-emerald-600 text-white px-4 py-2 rounded-lg hover:bg-emerald-700 transition-colors">
+                      <Plus className="w-4 h-4" />
+                      <span>Add Skill</span>
+                    </button>
+                    <a href="#" className="block py-2 text-gray-700">Profile</a>
+                    <a href="#" className="block py-2 text-gray-700">My Skills</a>
+                    <a href="#" className="block py-2 text-gray-700">Messages</a>
+                    <button
+                      onClick={handleSignOut}
+                      className="w-full text-left py-2 text-red-600 flex items-center space-x-2"
+                    >
+                      <LogOut className="w-4 h-4" />
+                      <span>Sign Out</span>
+                    </button>
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    <button
+                      onClick={() => handleAuthClick('signin')}
+                      className="w-full text-left py-2 text-gray-700 font-medium"
+                    >
+                      Sign In
+                    </button>
+                    <button
+                      onClick={() => handleAuthClick('signup')}
+                      className="w-full bg-emerald-600 text-white px-4 py-2 rounded-lg hover:bg-emerald-700 transition-colors"
+                    >
+                      Join Community
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
-            <input
-              type="text"
-              placeholder="Search skills..."
-              className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-            />
-          </div>
+          )}
         </div>
-      </div>
+      </header>
 
-      {/* Mobile menu */}
-      {isMenuOpen && (
-        <div className="md:hidden">
-          <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-white border-t border-gray-200">
-            <button className="flex items-center w-full px-3 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700">
-              <Plus className="h-4 w-4 mr-2" />
-              Share Skill
-            </button>
-            <button className="flex items-center w-full px-3 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200">
-              <User className="h-4 w-4 mr-2" />
-              Profile
-            </button>
-          </div>
-        </div>
-      )}
-    </header>
+      <AuthModal
+        isOpen={isAuthModalOpen}
+        onClose={() => setIsAuthModalOpen(false)}
+        initialMode={authMode}
+      />
+    </>
   );
-};
-
-export default Header;
+}
